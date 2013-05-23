@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bouboum Map Editor</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <link rel="stylesheet" href="assets/css/normalize.css" media="all" type="text/css" />
+        <link rel="stylesheet" href="assets/css/main.css" media="all" type="text/css" />
+    </head>
+    <body>
+        <div class="holder">
+            <canvas id="background"></canvas>
+            <canvas id="map"></canvas>
+            <canvas id="cursor" class='cursor'></canvas>
+            <canvas id="mousecheat"></canvas>
+        </div>
+        <div class='options' id='options'></div>
+        <form id='impex' class='import-export'>
+            <div>
+                <h2>Importez / Exportez vos maps !</h2>
+                <span>Copiez ou collez les données afin d'importer ou d'exporter une map.</span>
+                <textarea id='code'></textarea>
+            </div>
+
+            <div>
+                <button id='close'>Close</button>
+                <button id='load'>Load</button>
+            </div>
+        </form>
+        <script type="text/javascript" src="assets/javascript/lib/require.js" data-main="assets/javascript/main"></script>
+        <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+    </body>
+</html>
