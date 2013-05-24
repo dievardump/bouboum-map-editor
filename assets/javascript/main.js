@@ -169,9 +169,9 @@
 			var f1 = gui.addFolder('Map Type');
 			typeController = f1.add(settings, 'type', types).onChange(settings.setType);
 			var f2 = gui.addFolder('Cursor');
-			f2.add(settings, 'cursorType', cursorTypes).onChange(settings.fnCursorType);
-			f2.add(settings, 'cursorWidth').min(1).max(10).step(1).onChange(settings.fnCursorWidth);
-			f2.add(settings, 'cursorHeight').min(1).max(10).step(1).onChange(settings.fnCursorHeight);
+			var typeController = f2.add(settings, 'cursorType', cursorTypes).onChange(settings.fnCursorType);
+			var widthController = f2.add(settings, 'cursorWidth').min(1).max(10).step(1).onChange(settings.fnCursorWidth);
+			var heightController = f2.add(settings, 'cursorHeight').min(1).max(10).step(1).onChange(settings.fnCursorHeight);
 
 			var f3 = gui.addFolder('Remplissage');
 			f3.add(settings, 'reset');
@@ -241,9 +241,40 @@
 			});
 
 			var mouseWheelEvent = (/Firefox/i.test(navigator.userAgent))? "DOMMouseScroll" : "mousewheel";
-			elements.mouse.addEventListener(mouseWheelEvent, function(e) {
-				cursor.setType(++cursor.type % 3);
-			});
+
+			var mouseWheelHandler = function (e) {
+				e.preventDefault();
+				var data = e.detail ? -e.detail : e.wheelDelta;
+				data = data > 0 ? 1 : -1;
+
+				if (e.altKey || e.shiftKey) {
+					var width = +widthController.getValue();
+					var height = +heightController.getValue();
+					if ((data < 0 && width === 1 && height === 1) ||
+						(data > 0 && width === 10 && height === 10)) {
+						return;
+					}
+
+					if (e.altKey) {
+						width += data;
+						widthController.setValue(width);
+					}
+
+					if (e.shiftKey) {
+						height += data;
+						heightController.setValue(height);
+					}
+				}
+				else {
+					var value = (typeController.getValue()+data) % (cursors.length);
+					if (value < 0) {
+						value = cursors.length-1;
+					}
+					typeController.setValue(value);
+				}
+			}
+
+			elements.mouse.addEventListener(mouseWheelEvent, mouseWheelHandler);
 
 			elements.close.addEventListener('click', function (e) {
 				e.preventDefault();
