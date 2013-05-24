@@ -8,10 +8,11 @@
  require(
 	[
 		'assets/javascript/lib/dat.gui.min.js',
+		'assets/javascript/lib/ajax.js',
 		'assets/javascript/editor/Editor.js',
 		'assets/javascript/editor/Cursor.js'
 	],
-	function (GUI, Editor, Cursor) {
+	function (GUI, XHR, Editor, Cursor) {
 
 		var canvasCheck = document.createElement('canvas');
 
@@ -159,6 +160,50 @@
 						className = 'hide-cursor';
 					}
 					elements.mouse.className = className;
+				},
+
+				imgur: function () {
+
+					if (confirm('Vous allez uploader votre map sur le site imgur.com et récupérer un lien pour y accéder.\nVoulez-vous continuer ?')) {
+						var canvas = document.createElement('canvas'),
+							ctx = canvas.getContext('2d');
+
+						canvas.width = elements.map.width;
+						canvas.height = elements.map.height;
+
+						ctx.drawImage(elements.background, 0, 0);
+						ctx.drawImage(elements.map, 0, 0);
+
+						try {
+					        var img = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+					    } catch(e) {
+					        var img = canvas.toDataURL().split(',')[1];
+					    }
+					    
+					    var date = (+new Date());
+					    XHR.ajax({
+					    	url: 'https://api.imgur.com/3/upload.json',
+							type: 'POST',
+							data: {
+								type: 'base64',
+								key: '08739464ca0076df069bb66ccb9d4b5883339c03',
+								image: img
+							},
+							dataType: 'json',
+							beforeSend: function (request) {
+								request.setRequestHeader("Authorization", "Client-ID 40ec0a0788ce226");
+							},
+					        success: function (data) {
+					        	console.log(data);
+					        	if (data.success) {
+					        		alert('Votre image est disponible ici: ' + data.data.link);
+					        	}
+					        }, 
+					        error: function (data) {
+					        	alert(error.message);
+					        }
+					    });
+					}
 				}
 			};
 
@@ -193,6 +238,7 @@
 			var f4 = gui.addFolder('Import / Export');
 			f4.add(settings, 'export');
 			f4.add(settings, 'import');
+			f4.add(settings, 'imgur');
 
 			f1.open();
 			f2.open();
