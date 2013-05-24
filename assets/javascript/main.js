@@ -535,6 +535,10 @@ require(
 				isClicked = false;
 			});
 
+			var mouseWheelEvent = (/Firefox/i.test(navigator.userAgent))? "DOMMouseScroll" : "mousewheel";
+			elements.mouse.addEventListener(mouseWheelEvent, function(e) {
+				cursor.setType(++cursor.type % 3);
+			});
 
 			elements.close.addEventListener('click', function (e) {
 				e.preventDefault();
