@@ -11,6 +11,7 @@ html, body {
     font-size : 14px;
     padding: 10px;
 }
+
 canvas {
     position: absolute;
     top: 0; 
@@ -39,7 +40,11 @@ canvas {
 
 .options {
     float: left;
-    margin: 25px 5px;
+    margin: 0px 5px;
+}
+
+.grid {
+    display: none;
 }
 
 .cursor {
@@ -55,10 +60,6 @@ canvas {
     height: 100%;
     padding-top: 10px;
     background-color: rgba(0, 0, 0, 0.7);
-}
-
-.import-export h2 {
-
 }
 
 .import-export textarea {

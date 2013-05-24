@@ -24,15 +24,38 @@ define(function () {
 
 				this.background = elements.background;
 				this.map = elements.map;
+				this.grid = elements.grid;
 
 				this.ctxs.map = this.map.getContext('2d');
 				this.ctxs.background = this.background.getContext('2d');
 
-
+				this.gridify();
 
 				this.reset();
 
 				return this;
+			},
+
+			gridify: function () {
+				var ctx = this.grid.getContext('2d'),
+					sizes = this.sizes,
+					h = sizes.default.h,
+					w = sizes.default.w,
+					iterY = sizes.maps.h/h,
+					iterX = sizes.maps.w/w;
+
+				for(j = 0; j<iterX; j++) {
+					ctx.moveTo(j * w, 0);
+					ctx.lineTo(j * w, sizes.maps.h);
+				}
+
+				for(i = 0; i<iterY; i++) {
+					ctx.moveTo(0, i * h);
+					ctx.lineTo(sizes.maps.w, i * h);
+				}
+
+				ctx.strokeStyle = 'rgba(255,255,255,1)';
+				ctx.stroke();
 			},
 
 			setType: function (type) {

@@ -47,11 +47,13 @@
 				}
 			]
 		},
+
 		sprite = 'assets/img/sprite.png',
 		sprites = ['block', 'unbreakable', 'background'],
 		elements = {
 			map: document.getElementById('map'),
 			background: document.getElementById('background'),
+			grid: document.getElementById('grid'),
 			cursor: document.getElementById('cursor'),
 			mouse: document.getElementById('mousecheat'),
 			impex: document.getElementById('impex'),
@@ -71,8 +73,10 @@
 			}
 		];
 
-		elements.map.width = elements.background.width =  elements.mouse.width = sizes.maps.w;
-		elements.map.height = elements.background.height = elements.mouse.height = sizes.maps.h;
+		['map', 'background', 'grid', 'mouse'].forEach(function(name) {
+			elements[name].width = sizes.maps.w;
+			elements[name].height = sizes.maps.h;
+		});
 
 		function extend(target) {
             Array.prototype.slice.call(arguments, 1).forEach(function(source) {
@@ -204,6 +208,13 @@
 					        }
 					    });
 					}
+
+				},
+				
+				showGrid: false,
+
+				fnShowGrid: function (value) {
+					elements.grid.style.display = value ? 'block' : 'none';
 				}
 			};
 
@@ -225,6 +236,7 @@
 
 			var f1 = gui.addFolder('Map Type');
 			typeController = f1.add(settings, 'type', types).onChange(settings.setType);
+			f1.add(settings, 'showGrid').onChange(settings.fnShowGrid);
 			var f2 = gui.addFolder('Cursor');
 			var cursorTypeController = f2.add(settings, 'cursorType', cursorTypes).onChange(settings.fnCursorType);
 			var widthController = f2.add(settings, 'cursorWidth').min(1).max(10).step(1).onChange(settings.fnCursorWidth);
