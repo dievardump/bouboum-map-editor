@@ -149,8 +149,20 @@
 
 				setType: function (value) {
 					editor.setType(value);
+				},
+
+				hideCursor: true,
+
+				fnHideCursor: function (value) {
+					var className = ''; 
+					if (value) {
+						className = 'hide-cursor';
+					}
+					elements.mouse.className = className;
 				}
 			};
+
+			settings.fnHideCursor(true);
 
 			var types = {};
 			maps.types.forEach(function (item, index) {
@@ -172,6 +184,7 @@
 			var typeController = f2.add(settings, 'cursorType', cursorTypes).onChange(settings.fnCursorType);
 			var widthController = f2.add(settings, 'cursorWidth').min(1).max(10).step(1).onChange(settings.fnCursorWidth);
 			var heightController = f2.add(settings, 'cursorHeight').min(1).max(10).step(1).onChange(settings.fnCursorHeight);
+			f2.add(settings, 'hideCursor').onChange(settings.fnHideCursor);
 
 			var f3 = gui.addFolder('Remplissage');
 			f3.add(settings, 'reset');

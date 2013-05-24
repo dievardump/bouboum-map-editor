@@ -31,6 +31,9 @@ canvas {
     height: 360px;
     border: 2px solid #fff;
     overflow: hidden;
+}
+
+.hide-cursor {
     cursor: none;
 }
 
