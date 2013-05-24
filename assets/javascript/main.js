@@ -261,7 +261,8 @@
 			},
 
 			full: function () {
-				this.fill(function() { return 0; });
+				var type = this.cursor.type;
+				this.fill(function() { return type; });
 
 				return this;
 			},
