@@ -48,11 +48,13 @@ canvas {
 }
 
 .import-export {
+    position: relative;
     clear: both;
     display: none;
-    width: 780px;
-    height: 150px;
+    width: 100%;
+    height: 100%;
     padding-top: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
 .import-export h2 {

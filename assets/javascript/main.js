@@ -226,7 +226,7 @@
 			var f1 = gui.addFolder('Map Type');
 			typeController = f1.add(settings, 'type', types).onChange(settings.setType);
 			var f2 = gui.addFolder('Cursor');
-			var typeController = f2.add(settings, 'cursorType', cursorTypes).onChange(settings.fnCursorType);
+			var cursorTypeController = f2.add(settings, 'cursorType', cursorTypes).onChange(settings.fnCursorType);
 			var widthController = f2.add(settings, 'cursorWidth').min(1).max(10).step(1).onChange(settings.fnCursorWidth);
 			var heightController = f2.add(settings, 'cursorHeight').min(1).max(10).step(1).onChange(settings.fnCursorHeight);
 			f2.add(settings, 'hideCursor').onChange(settings.fnHideCursor);
@@ -278,6 +278,8 @@
 			}
 
 			function position (e) {
+				e.preventDefault();
+				e.stopPropagation();
 				cursor.setVisible(true);
 				cursor.position(e.clientX, e.clientY);
 				if (isClicked) {
@@ -325,11 +327,11 @@
 					}
 				}
 				else {
-					var value = (typeController.getValue()+data) % (cursors.length);
+					var value = (cursorTypeController.getValue()+data) % (cursors.length);
 					if (value < 0) {
 						value = cursors.length-1;
 					}
-					typeController.setValue(value);
+					cursorTypeController.setValue(value);
 				}
 			}
 
@@ -347,6 +349,7 @@
 				if (parsed) {
 					editor.items = parsed.items;
 					typeController.setValue(parsed.type);
+					elements.impex.style.display = 'none';
 				}
 			});
 
