@@ -536,11 +536,13 @@ require(
 			});
 
 
-			elements.close.addEventListener('click', function () {
+			elements.close.addEventListener('click', function (e) {
+				e.preventDefault();
 				elements.impex.style.display = 'none';
 			});
 
-			elements.load.addEventListener('click', function () {
+			elements.load.addEventListener('click', function (e) {
+				e.preventDefault();
 				var data = elements.code.value,
 					parsed = JSON.parse(data);
 				if (parsed) {
