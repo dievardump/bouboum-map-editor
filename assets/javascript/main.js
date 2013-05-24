@@ -210,7 +210,7 @@
 					}
 
 				},
-				
+
 				showGrid: false,
 
 				fnShowGrid: function (value) {
@@ -237,16 +237,18 @@
 			var f1 = gui.addFolder('Map Type');
 			typeController = f1.add(settings, 'type', types).onChange(settings.setType);
 			f1.add(settings, 'showGrid').onChange(settings.fnShowGrid);
+
 			var f2 = gui.addFolder('Cursor');
 			var cursorTypeController = f2.add(settings, 'cursorType', cursorTypes).onChange(settings.fnCursorType);
-			var widthController = f2.add(settings, 'cursorWidth').min(1).max(10).step(1).onChange(settings.fnCursorWidth);
-			var heightController = f2.add(settings, 'cursorHeight').min(1).max(10).step(1).onChange(settings.fnCursorHeight);
+			var widthController = f2.add(settings, 'cursorWidth').min(1).max(sizes.maps.w/sizes.default.w).step(1).onChange(settings.fnCursorWidth);
+			var heightController = f2.add(settings, 'cursorHeight').min(1).max(sizes.maps.h/sizes.default.w).step(1).onChange(settings.fnCursorHeight);
 			f2.add(settings, 'hideCursor').onChange(settings.fnHideCursor);
 
 			var f3 = gui.addFolder('Remplissage');
 			f3.add(settings, 'reset');
 			f3.add(settings, 'full');
 			f3.add(settings, 'random');
+			
 			var f4 = gui.addFolder('Import / Export');
 			f4.add(settings, 'export');
 			f4.add(settings, 'import');
