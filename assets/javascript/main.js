@@ -1,6 +1,21 @@
-require(
+/*!
+ * Map Editor 
+ * Main JavaScript File
+ *
+ * @TODO: refactoring to really use requirejs
+ * @TODO: Spend more than 2 hours on that shit
+ */
+ require(
 	['assets/javascript/lib/dat.gui.min.js'],
 	function (GUI) {
+
+		var canvasCheck = document.createElement('canvas');
+
+		if (!canvasCheck.getContext || !JSON || !JSON.stringify || !JSON.parse) {
+			alert("Hey mec, faut changer de navigateur là !");
+			return;
+		}
+
 		var sizes = {
 			'default': { w: 20, h: 20 },
 			maps: { w: 780, h: 360 }
