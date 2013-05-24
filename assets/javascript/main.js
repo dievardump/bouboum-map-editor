@@ -260,6 +260,12 @@
 				return this;
 			},
 
+			full: function () {
+				this.fill(function() { return 0; });
+
+				return this;
+			},
+
 			random: function () {
 				this.fill(function() { return Math.round(Math.random()*2); });
 
@@ -436,6 +442,11 @@
 					editor.draw();
 				},
 
+				full: function () {
+					editor.full();
+					editor.draw();
+				},
+
 				random: function () {
 					editor.random();
 					editor.draw();
@@ -484,18 +495,19 @@
 			f2.add(settings, 'cursorWidth').min(1).max(10).step(1).onChange(settings.fnCursorWidth);
 			f2.add(settings, 'cursorHeight').min(1).max(10).step(1).onChange(settings.fnCursorHeight);
 
-			var f3 = gui.addFolder('Controls');
+			var f3 = gui.addFolder('Remplissage');
 			f3.add(settings, 'reset');
+			f3.add(settings, 'full');
 			f3.add(settings, 'random');
-			f3.add(settings, 'export');
-			f3.add(settings, 'import');
-
+			var f4 = gui.addFolder('Import / Export');
+			f4.add(settings, 'export');
+			f4.add(settings, 'import');
 
 			f1.open();
 			f2.open();
 			f3.open();
+			f4.open();
 
-			
 			var options = {
 				sprite: this,
 				sprites: sprites,

@@ -9,7 +9,6 @@ html, body {
     color: #fff;
     
     font-size : 14px;
-    overflow: hidden;
     padding: 10px;
 }
 canvas {
