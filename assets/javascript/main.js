@@ -59,7 +59,8 @@
 			impex: document.getElementById('impex'),
 			code: document.getElementById('code'),
 			load: document.getElementById('load'),
-			close: document.getElementById('close')
+			close: document.getElementById('close'),
+			sydo: document.getElementById('sydo')
 		},
 		cursors = [
 			{
@@ -85,6 +86,45 @@
                 });
             });
             return target;
+        }
+
+        function convertForSydoline(canvas, ctx, items) {
+
+        	var sydo = elements.sydo,
+        		deltaX = (sydo.width-sizes.maps.w)/2,
+        		deltaY = (sydo.height-sizes.maps.h)/2,
+        		colors = {
+        			block: 'rgb(105, 119, 193)',
+        			unbreakable: 'rgb(0, 0, 0)'
+        		},
+        		bWidth = sizes.default.w,
+        		bHeight = sizes.default.h,
+        		iterX = sizes.maps.w/bWidth,
+        		iterY = sizes.maps.h/bHeight,
+        		i = 0, j = 0,
+        		item = 0;
+
+        	canvas.width = sydo.width;
+        	canvas.height = sydo.height;
+        	ctx.drawImage(sydo, 0, 0);
+
+        	for(i = 0; i < iterY; i++) {
+        		for(j = 0; j < iterX; j++) {
+        			item = items[i][j];
+        			if (item === 0) {
+        				ctx.fillStyle = colors.block;
+        			}
+        			else if (item === 1) {
+        				ctx.fillStyle = colors.unbreakable;
+        			}
+        			else {
+        				ctx.fillStyle = 'transparent';
+        			}
+        			ctx.fillRect(deltaX + (j*bWidth), deltaY+(i*bHeight), bWidth-1, bHeight-1);
+        		}
+        	}
+
+        	return canvas;
         }
 
 		
@@ -166,18 +206,21 @@
 					elements.mouse.className = className;
 				},
 
-				imgur: function () {
+				imgur: function (sydo) {
 
 					if (confirm('Vous allez uploader votre map sur le site imgur.com et récupérer un lien pour y accéder.\nVoulez-vous continuer ?')) {
 						var canvas = document.createElement('canvas'),
 							ctx = canvas.getContext('2d');
+						if (sydo === true) {
+							canvas = convertForSydoline(canvas, ctx, editor.items);
 
-						canvas.width = elements.map.width;
-						canvas.height = elements.map.height;
+						} else {
+							canvas.width = elements.map.width;
+							canvas.height = elements.map.height;
 
-						ctx.drawImage(elements.background, 0, 0);
-						ctx.drawImage(elements.map, 0, 0);
-
+							ctx.drawImage(elements.background, 0, 0);
+							ctx.drawImage(elements.map, 0, 0);							
+						}
 						try {
 					        var img = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
 					    } catch(e) {
@@ -208,7 +251,10 @@
 					        }
 					    });
 					}
+				},
 
+				convertForSydoline: function () {
+					this.imgur(true);
 				},
 
 				showGrid: false,
@@ -248,11 +294,12 @@
 			f3.add(settings, 'reset');
 			f3.add(settings, 'full');
 			f3.add(settings, 'random');
-			
+
 			var f4 = gui.addFolder('Import / Export');
 			f4.add(settings, 'export');
 			f4.add(settings, 'import');
 			f4.add(settings, 'imgur');
+			f4.add(settings, 'convertForSydoline');
 
 			f1.open();
 			f2.open();

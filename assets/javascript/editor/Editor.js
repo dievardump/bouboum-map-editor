@@ -119,12 +119,10 @@ define(function () {
 
 				if (arguments.length === 0) {
 					// fill the background
+					var pattern = ctx.createPattern(bgd, 'repeat');
 					ctx.clearRect(0, 0, sizes.maps.w, sizes.maps.h);
-					for(i = 0; i<iterY; i++) {
-						for(j = 0; j<iterX; j++) {
-							ctx.drawImage(bgd, 0, 0, w, h, j * w,  i * h, w, h);
-						}
-					}
+					ctx.fillStyle = pattern;
+  					ctx.fillRect(0, 0, sizes.maps.w, sizes.maps.h);
 				}
 
 				// fill the items
