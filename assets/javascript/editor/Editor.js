@@ -13,7 +13,7 @@ define(function () {
 			},
 
 			items: [],
-
+			history: [],
 
 			init: function (elements, options) {
 				this.sprite = options.sprite;
@@ -30,9 +30,6 @@ define(function () {
 				this.ctxs.background = this.background.getContext('2d');
 
 				this.gridify();
-
-				this.reset();
-
 				return this;
 			},
 
@@ -123,7 +120,7 @@ define(function () {
 
 
 			draw: function () {
-				var items = this.items,
+				var items = this.getItems(),
 					sizes = this.sizes,
 					model = this.types[this.type],
 					w = model.background.w,
@@ -136,7 +133,6 @@ define(function () {
 					block = this.ghosts.canvas.block,
 					ub = this.ghosts.canvas.unbreakable,
 					item = null;
-
 				if (arguments.length === 0) {
 					// fill the background
 					var pattern = ctx.createPattern(bgd, 'repeat');
@@ -170,8 +166,8 @@ define(function () {
 				ctx.clearRect(x, y, clearW, clearH);
 				for(i = y/h; i<iterY; i++) {
 					for(j = x/w; j<iterX; j++) {
-						if (typeof this.items[i] !== 'undefined' 
-						&& typeof this.items[i][j]  !== 'undefined') {
+						if (typeof items[i] !== 'undefined' 
+						&& typeof items[i][j]  !== 'undefined') {
 							item = items[i][j];
 							if (item === 0) {
 								ctx.drawImage(block, 0, 0, w, h, j * w,  i * h, w, h);
@@ -186,7 +182,11 @@ define(function () {
 			},
 
 			fill: function (fn) {
-				var items = this.items,
+				if (this.items.length) {
+					this.addHistory();
+				}
+
+				var items = this.getItems(),
 					sizes = this.sizes,
 					iterY = sizes.maps.h/sizes.default.h,
 					iterX = sizes.maps.w/sizes.default.w;
@@ -200,12 +200,12 @@ define(function () {
 					}
 				}
 
+				this.setItems(items);
 				return this;
 			},
 
 			reset: function () {
 				this.fill(function() { return 2; });
-
 				return this;
 			},
 
@@ -223,17 +223,41 @@ define(function () {
 			},
 
 			setBlocs: function(blocs, type) {
-				var that = this;
+				var items = this.getItems();
 				blocs.forEach(function (item) {
-					that.setBloc(item.x, item.y, type);
+					if (typeof items[item.y] !== 'undefined' 
+							&& typeof items[item.y][item.x]  !== 'undefined') {
+						items[item.y][item.x] = type;
+					}
 				});
+				this.setItems(items);
 			},
 
-			setBloc: function (x, y, type) {
-				if (typeof this.items[y] !== 'undefined' 
-						&& typeof this.items[y][x]  !== 'undefined') {
-					this.items[y][x] = type;
+			setItems: function (items, echo) {
+				this.items = items;
+			},
+
+			getItems: function () {
+				if (this.items.length) {
+					for(var i = 0, j = this.items.length; i < j; i++) {
+						this.items[i] = this.items[i].slice(0);
+					}
 				}
+				return this.items.slice(0);
+			},
+
+			addHistory: function () {
+				this.history.push(this.getItems());
+			},
+
+			popHistory: function () {
+				var res = null;
+				if (this.history.length) {
+					res = this.history.pop();
+				} else {
+					res = this.getItems();
+				}
+				return res;
 			}
 		};
 
