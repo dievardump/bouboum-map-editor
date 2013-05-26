@@ -44,10 +44,12 @@ define(function () {
 					iterY = sizes.maps.h/h,
 					iterX = sizes.maps.w/w;
 
+				ctx.beginPath();
 				for(j = 0; j<iterX; j++) {
 					ctx.moveTo(j * w, 0);
 					ctx.lineTo(j * w, sizes.maps.h);
 				}
+
 
 				for(i = 0; i<iterY; i++) {
 					ctx.moveTo(0, i * h);
@@ -56,6 +58,24 @@ define(function () {
 
 				ctx.strokeStyle = 'rgba(255,255,255,1)';
 				ctx.stroke();
+
+				ctx.closePath();
+				ctx.beginPath();
+				var mid = Math.floor(iterX/2);
+				ctx.moveTo(mid * w, 0);
+				ctx.lineTo(mid * w, sizes.maps.h);
+				mid++;
+				ctx.moveTo(mid * w, 0);
+				ctx.lineTo(mid * w, sizes.maps.h);
+
+				mid = Math.floor(iterY/2);
+				ctx.moveTo(0, mid * h);
+				ctx.lineTo(sizes.maps.w, mid * h);
+
+				ctx.strokeStyle = 'rgba(255,0, 0, 1)';
+				ctx.stroke();
+				ctx.closePath();
+
 			},
 
 			setType: function (type) {
