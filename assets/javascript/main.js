@@ -23,7 +23,11 @@
 
 		var sizes = {
 			'default': { w: 20, h: 20 },
-			maps: { w: 780, h: 360 }
+			maps: { w: 780, h: 360 },
+			ratio: {
+				old: { x: 29, y: 19 },
+				news: { x: 39, y: 18 }
+			}
 		},
 		maps = {
 			types: [
@@ -60,7 +64,8 @@
 			code: document.getElementById('code'),
 			load: document.getElementById('load'),
 			close: document.getElementById('close'),
-			sydo: document.getElementById('sydo')
+			sydo: document.getElementById('sydo'),
+			drag: document.getElementById('drag')
 		},
 		cursors = [
 			{
@@ -126,6 +131,8 @@
 
         	return canvas;
         }
+
+        
 
 		
 		var image = new Image();
@@ -429,6 +436,136 @@
 					elements.impex.style.display = 'none';
 				}
 			});
+
+			document.body.addEventListener('dragover', function(e) {
+				e.preventDefault();
+				return false;
+			});
+			document.body.addEventListener('dragenter', function(e) {
+				e.preventDefault();
+				elements.drag.style.display = 'block';
+				return false;
+			});
+
+
+
+		function loadFromFile(img, iterX, iterY, colors, ommit) {
+
+        	var canvas = document.createElement('canvas'),
+        		ctx = canvas.getContext('2d'),
+        		w = img.width / iterX,
+        		halfW = w/2,
+        		h = img.height / iterY,
+        		halfH = h/2,
+        		i = 0, j = 0, z = 0,
+        		p = null,
+        		items = [],
+        		keys = Object.keys(colors),
+        		len = keys.length,
+        		color = null,
+        		before = 0,
+        		after = 0,
+        		diff = 0;
+
+        	if (typeof ommit !== 'undefined') {
+        		before = after = (sizes.ratio.news.x-sizes.ratio.old.x)/2;
+        	}
+        	canvas.width = img.width;
+        	canvas.height = img.height;
+        	ctx.drawImage(img, 0, 0);
+
+        	for(i = 0; i < iterY; i++) {
+        		if (typeof ommit !== 'undefined' &&
+        			ommit === i) {
+        			diff++;
+        		}
+        		items[i] = new Array();
+        		for(j = 0; j < before; j++) {
+        			items[i][j] = len-1;
+        		}
+        		for(j = 0; j < iterX; j++) {
+        			items[i][j+before] = null;
+        			p = ctx.getImageData(j * w + halfW , (i+diff) * h + halfH, 1, 1).data; 
+        			for(z = 0; z < len; z++) {
+        				color = colors[keys[z]];
+        				if (p[0] == color[0] && p[1] === color[1] && p[2] === color[2]) {
+        					items[i][j+before] = z;
+        					break;
+        				}
+        			}
+        			if (items[i][j+before] === null) {
+      					items[i][j+before] = len-1;
+        			}
+        		}
+        		for(j = before+iterX; j < after; j++) {
+        			items[i][j] = len-1;
+        		}
+        	}
+
+        	editor.setItems(items);
+        	editor.draw();
+        }
+
+			document.body.addEventListener('drop', function (e) {
+				e.preventDefault();
+			
+				var data = e.dataTransfer || e.originalEvent.dataTransfer;
+				if (data.files.length === 1) {
+					var file = data.files[0];
+					if (file.type.indexOf('image') === -1) {
+						alert('You may only drop images to the page');
+						return false;
+					}	
+					var reader = new FileReader();
+					reader.readAsDataURL(file);
+					reader.onload = function(ev) {
+						var img = new Image();
+						img.onload = function () {
+							var w = this.width,
+								h = this.height,
+								r = w/h,
+								oldR = sizes.ratio.old.x/sizes.ratio.old.y,
+								color = null;
+
+							if (r == oldR) {
+								var ommit = +(prompt('New Maps are 18 lines height, old are 19 lines height, choose a ligne to not import (default = 19):'));
+								if (isNaN(ommit) || (ommit < 1 || ommit > 19) ) {
+									ommit = 19;
+								}
+								colors = {
+    								block: [21, 115, 124],
+    								unbreakable: [0, 0, 0],
+    								empty: [54, 54, 75]
+    							};
+
+								loadFromFile(this, sizes.ratio.old.x, sizes.ratio.old.y, colors, ommit-1);
+							} else if (w === elements.sydo.width && h === elements.sydo.height) {
+								var deltaX = (this.width-sizes.maps.w)/2,
+        							deltaY = (this.height-sizes.maps.h)/2,
+        							canvas = document.createElement('canvas'),
+        							ctx = canvas.getContext('2d');
+
+        						colors = {
+									block: [105, 119, 193],
+									unbreakable: [0, 0, 0],
+									empty: [255, 255, 255]
+								};
+
+        						canvas.width = sizes.maps.w;
+        						canvas.height = sizes.maps.h;
+        						ctx.drawImage(this, deltaX, deltaY, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+								loadFromFile(canvas, sizes.ratio.news.x, sizes.ratio.news.y, colors);
+							}
+						}
+						img.src = ev.target.result;
+						
+					};
+				} else {
+					alert('You may only drop one image at a time to the page');
+				}
+				elements.drag.style.display = 'none';
+				return false;
+			}, true);
 
 		};
 
