@@ -10,9 +10,12 @@ define(function() {
 				element = element.offsetParent;
 			} while (element);
 		}
-		return { x: curleft, y: curtop };
-    }
-        
+		return {
+			x: curleft,
+			y: curtop
+		};
+	}
+
 	var Cursor = {
 		width: 1,
 		height: 1,
@@ -23,13 +26,13 @@ define(function() {
 			y: 0
 		},
 		size: {
-			w: 20, 
+			w: 20,
 			h: 20
 		},
 		visible: false,
 		offset: null,
 
-		init: function (elements, options) {
+		init: function(elements, options) {
 
 			this.canvas = elements.cursor;
 			this.ctx = elements.cursor.getContext('2d');
@@ -40,32 +43,32 @@ define(function() {
 			this.size = options.size;
 			this.types = options.types;
 
-			this.resize(); 
+			this.resize();
 
 			return this;
 		},
 
-		resize: function () {
+		resize: function() {
 			this.canvas.width = this.width * this.size.w;
 			this.canvas.height = this.height * this.size.h;
 
 			this.draw();
-			return this;	
+			return this;
 		},
 
-		setGhosts: function (ghosts) {
+		setGhosts: function(ghosts) {
 			this.ghosts = ghosts;
 			this.draw();
 
 			return this;
 		},
 
-		position: function (x, y) {
+		position: function(x, y) {
 			x -= this.offset.x;
 			y -= this.offset.y;
-			
-			x = Math.floor(x/this.size.w) * this.size.w;
-			y = Math.floor(y/this.size.h) * this.size.h;
+
+			x = Math.floor(x / this.size.w) * this.size.w;
+			y = Math.floor(y / this.size.h) * this.size.h;
 
 			this.canvas.style.left = x + 'px';
 			this.canvas.style.top = y + 'px';
@@ -77,7 +80,7 @@ define(function() {
 			}
 		},
 
-		draw: function () {
+		draw: function() {
 			if (this.ghosts !== null) {
 				var type = this.type,
 					size = this.size,
@@ -96,9 +99,8 @@ define(function() {
 					if (w > 0 && h > 0) {
 						this.ctx.drawImage(
 							this.background,
-							this.pos.x,	this.pos.y,
-							w, h, 0, 0, w, h
-						);
+							this.pos.x, this.pos.y,
+							w, h, 0, 0, w, h);
 					}
 				} else {
 					var width = this.width,
@@ -106,10 +108,10 @@ define(function() {
 						ghost = this.ghosts.canvas[this.types[type]],
 						i = 0,
 						j = 0;
-						w = size.w;
-						h = size.h;
-					for(i = 0; i < height; i++) {
-						for(j = 0; j < width; j++) {
+					w = size.w;
+					h = size.h;
+					for (i = 0; i < height; i++) {
+						for (j = 0; j < width; j++) {
 							this.ctx.drawImage(ghost, 0, 0, w, h, j * w, i * h, w, h);
 						}
 					}
@@ -120,12 +122,12 @@ define(function() {
 			return this;
 		},
 
-		setType: function (type) {
+		setType: function(type) {
 			this.type = +type;
 			this.draw();
 		},
 
-		setVisible: function (bool) {
+		setVisible: function(bool) {
 			this.visible = bool;
 			this.canvas.style.display = bool ? 'block' : '';
 		}
