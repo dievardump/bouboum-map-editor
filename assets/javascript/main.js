@@ -542,7 +542,8 @@ require(
 				color = null,
 				before = 0,
 				after = 0,
-				diff = 0;
+				diff = 0,
+				every = false;
 
 			if (typeof ommit !== 'undefined') {
 				before = after = (sizes.ratio.news.x - sizes.ratio.old.x) / 2;
@@ -565,9 +566,13 @@ require(
 					p = ctx.getImageData(j * w + halfW, (i + diff) * h + halfH, 1, 1).data;
 					for (z = 0; z < len; z++) {
 						color = colors[keys[z]];
-						if (p[0] == color[0] && p[1] === color[1] && p[2] === color[2]) {
+						every = [p[0], p[1], p[2]].every(function (item, index) {
+						    var n = color[index];
+						    return item<=n+10 && item >=n-10;
+						});
+						if (every) {
 							items[i][j + before] = z;
-							break;
+							break;	
 						}
 					}
 					if (items[i][j + before] === null) {
