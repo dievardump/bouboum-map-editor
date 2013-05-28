@@ -338,6 +338,11 @@ require(
 			fnShowGrid: function(value) {
 				elements.grid.style.display = value ? 'block' : 'none';
 			}
+
+			/*importFromImageURL: function() {
+				var url = prompt('Enter Image map URL:');
+				loadSource(url);
+			}*/
 		};
 
 		settings.fnHideCursor(true);
@@ -380,6 +385,7 @@ require(
 		var f4 = gui.addFolder('Import / Export');
 		f4.add(settings, 'export');
 		f4.add(settings, 'import');
+		//f4.add(settings, 'importFromImageURL');
 		f4.add(settings, 'imgur');
 		f4.add(settings, 'convertForSydoline');
 
@@ -518,7 +524,7 @@ require(
 		});
 
 
-		function loadFromFile(img, iterX, iterY, colors, ommit) {
+		function loadFromImage(img, iterX, iterY, colors, ommit) {
 
 			var canvas = document.createElement('canvas'),
 				ctx = canvas.getContext('2d'),
@@ -577,6 +583,52 @@ require(
 			editor.draw();
 		}
 
+		function loadSource(src) {
+			var img = new Image();
+			img.onerror = function () {
+				alert('Invalid URL!');
+			};
+			img.onload = function() {
+				var w = this.width,
+					h = this.height,
+					r = w / h,
+					oldR = sizes.ratio.old.x / sizes.ratio.old.y,
+					color = null;
+
+				if (r == oldR) {
+					var ommit = +(prompt('New Maps are 18 lines high, old are 19 lines high, chose a ligne to not import (default = 19):'));
+					if (isNaN(ommit) || (ommit < 1 || ommit > 19)) {
+						ommit = 19;
+					}
+					colors = {
+						block: [21, 115, 124],
+						unbreakable: [0, 0, 0],
+						empty: [54, 54, 75]
+					};
+					document.body.appendChild(this);
+					loadFromImage(this, sizes.ratio.old.x, sizes.ratio.old.y, colors, ommit - 1);
+				} else if (w === elements.sydo.width && h === elements.sydo.height) {
+					var deltaX = (this.width - sizes.maps.w) / 2,
+						deltaY = (this.height - sizes.maps.h) / 2,
+						canvas = document.createElement('canvas'),
+						ctx = canvas.getContext('2d');
+
+					colors = {
+						block: [105, 119, 193],
+						unbreakable: [0, 0, 0],
+						empty: [255, 255, 255]
+					};
+
+					canvas.width = sizes.maps.w;
+					canvas.height = sizes.maps.h;
+					ctx.drawImage(this, deltaX, deltaY, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+					loadFromImage(canvas, sizes.ratio.news.x, sizes.ratio.news.y, colors);
+				}
+			};
+			img.src = src;
+		}
+
+
 		document.body.addEventListener('drop', function(e) {
 			e.preventDefault();
 
@@ -590,45 +642,7 @@ require(
 				var reader = new FileReader();
 				reader.readAsDataURL(file);
 				reader.onload = function(ev) {
-					var img = new Image();
-					img.onload = function() {
-						var w = this.width,
-							h = this.height,
-							r = w / h,
-							oldR = sizes.ratio.old.x / sizes.ratio.old.y,
-							color = null;
-
-						if (r == oldR) {
-							var ommit = +(prompt('New Maps are 18 lines height, old are 19 lines height, choose a ligne to not import (default = 19):'));
-							if (isNaN(ommit) || (ommit < 1 || ommit > 19)) {
-								ommit = 19;
-							}
-							colors = {
-								block: [21, 115, 124],
-								unbreakable: [0, 0, 0],
-								empty: [54, 54, 75]
-							};
-
-							loadFromFile(this, sizes.ratio.old.x, sizes.ratio.old.y, colors, ommit - 1);
-						} else if (w === elements.sydo.width && h === elements.sydo.height) {
-							var deltaX = (this.width - sizes.maps.w) / 2,
-								deltaY = (this.height - sizes.maps.h) / 2,
-								canvas = document.createElement('canvas'),
-								ctx = canvas.getContext('2d');
-
-							colors = {
-								block: [105, 119, 193],
-								unbreakable: [0, 0, 0],
-								empty: [255, 255, 255]
-							};
-
-							canvas.width = sizes.maps.w;
-							canvas.height = sizes.maps.h;
-							ctx.drawImage(this, deltaX, deltaY, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
-							loadFromFile(canvas, sizes.ratio.news.x, sizes.ratio.news.y, colors);
-						}
-					};
-					img.src = ev.target.result;
+					loadSource(ev.target.result);
 				};
 			} else {
 				alert('You may only drop one image at a time to the page');
